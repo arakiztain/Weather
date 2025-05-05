@@ -1,9 +1,9 @@
-// src/App.jsx
 import { useState, useEffect } from 'react';
+import debounce from 'lodash.debounce';
 import './App.css';
-require('dotenv').config();
 
-const api_key = process.env.API_KEY;
+const api_key = import.meta.env.VITE_API_KEY;
+console.log(api_key);
 
 function App() {
   const [city, setCity] = useState('');
@@ -17,26 +17,37 @@ function App() {
     localStorage.setItem('favorites', JSON.stringify(favorites));
   }, [favorites]);
 
-  // Buscar el clima cada vez que la ciudad cambia
-  useEffect(() => {
-    if (city) {
-      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${api_key}&units=metric`)
+  // Función de búsqueda con debounce
+  const fetchWeatherData = debounce((cityName) => {
+    if (cityName) {
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${api_key}&units=metric`)
         .then(res => res.json())
         .then(data => {
           if (data.cod === 200) {
             setWeather(data);
           } else {
             setWeather(null);
+            console.log(data);
             alert('Ciudad no encontrada');
           }
         });
     }
+  }, 1000); // 1000ms de debounce (1 segundo)
+
+  // Llamada a la API cuando la ciudad cambia
+  useEffect(() => {
+    fetchWeatherData(city); // Llamamos a la función con debounce
+    // Limpiar el debounce cuando el componente se desmonte
+    return () => {
+      fetchWeatherData.cancel();
+    };
   }, [city]);
 
   // Añadir a favoritos
   const addToFavorites = () => {
     if (!favorites.includes(city)) {
-      setFavorites([...favorites, city]);
+      const cityFormatted = city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
+      setFavorites([...favorites, cityFormatted]);
     }
   };
 
@@ -53,7 +64,7 @@ function App() {
         type="text"
         placeholder="Introduce una ciudad..."
         value={city}
-        onChange={(e) => setCity(e.target.value)}
+        onChange={(e) => setCity(e.target.value)} // Actualizamos la ciudad al escribir
       />
 
       <button onClick={addToFavorites}>⭐ Añadir a favoritos</button>

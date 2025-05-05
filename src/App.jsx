@@ -1,6 +1,9 @@
 // src/App.jsx
 import { useState, useEffect } from 'react';
 import './App.css';
+require('dotenv').config();
+
+const api_key = process.env.API_KEY;
 
 function App() {
   const [city, setCity] = useState('');
@@ -17,7 +20,7 @@ function App() {
   // Buscar el clima cada vez que la ciudad cambia
   useEffect(() => {
     if (city) {
-      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=0cfba14ef0d9a4d7ddaeefc84b36b3ce&units=metric`)
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${api_key}&units=metric`)
         .then(res => res.json())
         .then(data => {
           if (data.cod === 200) {

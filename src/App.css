@@ -18,6 +18,8 @@ body {
   background-color: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 h1 {
@@ -96,4 +98,26 @@ h3 {
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+/* Fondo dinámico de vídeo */
+.background-media {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Imagen de la ciudad */
+.city-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 15px;
 }

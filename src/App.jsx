@@ -2,8 +2,16 @@ import { useState, useEffect } from 'react';
 import debounce from 'lodash.debounce';
 import './App.css';
 
+import sunny from './assets/sunny.gif';
+import cloudy from './assets/cloudy.gif';
+import rain from './assets/rainy.gif';
+import snow from './assets/snowy.gif';
+import mist from './assets/mist.gif';
+import haze from './assets/haze.gif';
+import scattered from './assets/scattered clouds.gif';
+import defaultBg from './assets/default.gif';
+
 const api_key = import.meta.env.VITE_API_KEY;
-console.log(api_key);
 
 function App() {
   const [city, setCity] = useState('');
@@ -12,48 +20,71 @@ function App() {
     JSON.parse(localStorage.getItem('favorites')) || []
   );
 
-  // Guardar favoritos en localStorage cada vez que cambian
   useEffect(() => {
     localStorage.setItem('favorites', JSON.stringify(favorites));
   }, [favorites]);
 
-  // Función de búsqueda con debounce
+  // Cambiar el fondo dinámicamente
   const fetchWeatherData = debounce((cityName) => {
     if (cityName) {
-      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${api_key}&units=metric`)
-        .then(res => res.json())
-        .then(data => {
+      fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${api_key}&units=metric`
+      )
+        .then((res) => res.json())
+        .then((data) => {
           if (data.cod === 200) {
             setWeather(data);
           } else {
             setWeather(null);
-            console.log(data);
             alert('Ciudad no encontrada');
           }
         });
     }
-  }, 1000); // 1000ms de debounce (1 segundo)
+  }, 1000);
 
-  // Llamada a la API cuando la ciudad cambia
   useEffect(() => {
-    fetchWeatherData(city); // Llamamos a la función con debounce
-    // Limpiar el debounce cuando el componente se desmonte
+    fetchWeatherData(city);
     return () => {
       fetchWeatherData.cancel();
     };
   }, [city]);
 
-  // Añadir a favoritos
+  // Función para obtener el fondo según el clima
+  const getBackgroundImage = () => {
+    if (!weather) return defaultBg;
+    const description = weather.weather[0].description.toLowerCase();
+
+    if (description.includes('sun') || description.includes('clear')) return sunny;
+    if (description.includes('scattered')) return scattered;
+    if (description.includes('cloud')) return cloudy;
+    if (description.includes('rain') || description.includes('drizzle')) return rain;
+    if (description.includes('snow')) return snow;
+    if (description.includes('mist') || description.includes('fog')) return mist;
+    if (description.includes('haze')) return haze;
+
+    return defaultBg;
+  };
+
+  // Cambiar el fondo de la página cada vez que el clima cambia
+  useEffect(() => {
+    const backgroundImage = getBackgroundImage();
+    document.body.style.backgroundImage = `url(${backgroundImage})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.minHeight = '100vh';
+  }, [weather]); // Se ejecuta cada vez que el clima cambia
+
   const addToFavorites = () => {
     if (!favorites.includes(city)) {
-      const cityFormatted = city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
+      const cityFormatted =
+        city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
       setFavorites([...favorites, cityFormatted]);
     }
   };
 
-  // Eliminar de favoritos
   const removeFromFavorites = (cityToRemove) => {
-    setFavorites(favorites.filter(c => c !== cityToRemove));
+    setFavorites(favorites.filter((c) => c !== cityToRemove));
   };
 
   return (
@@ -64,13 +95,13 @@ function App() {
         type="text"
         placeholder="Introduce una ciudad..."
         value={city}
-        onChange={(e) => setCity(e.target.value)} // Actualizamos la ciudad al escribir
+        onChange={(e) => setCity(e.target.value)}
       />
 
       <button onClick={addToFavorites}>⭐ Añadir a favoritos</button>
 
       {weather && (
-        <div>
+        <div className="weather-card">
           <h2>{weather.name}</h2>
           <p>🌡️ Temp: {weather.main.temp}°C</p>
           <p>☁️ Estado: {weather.weather[0].description}</p>

@@ -1,0 +1,69 @@
+.navbar {
+  width: 100%;
+  background-color: #222;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.nav-spacer {
+  flex: 1;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+}
+
+
+.nav-link:hover {
+  color: #1e90ff;
+}
+
+.user-section {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+.username {
+  color: white;
+}
+
+.logout-button {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.logout-button:hover {
+  background-color: white;
+  color: black;
+}

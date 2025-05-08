@@ -121,3 +121,15 @@ button:disabled {
   object-fit: cover;
   margin-bottom: 15px;
 }
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* blanco con opacidad */
+  z-index: 0; /* detrás del contenido */
+  pointer-events: none; /* para no interferir con clics */
+}
+
